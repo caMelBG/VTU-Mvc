@@ -7,13 +7,9 @@ namespace DataBase
     {
         public UniversityContext() : base("UniversityContext")
         {
-        }
-
-        public UniversityContext(string connectionString) : base (connectionString)
-        {
             Database.SetInitializer<UniversityContext>(new UniversityInitializer<UniversityContext>());
         }
-
+        
         public DbSet<Student> Students { get; set; }
 
         public DbSet<Enrollment> Enrollments { get; set; }
