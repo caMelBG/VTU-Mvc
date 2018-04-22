@@ -1,13 +1,11 @@
 ﻿@model IEnumerable<DataBase.Models.Enrollment>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Entrollments";
 }
 
-<h2>Index</h2>
-
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
 </p>
 <table class="table">
     <tr>
@@ -35,9 +33,7 @@
             @Html.DisplayFor(modelItem => item.Grade)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.EnrollmentID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.EnrollmentID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.EnrollmentID })
+            @Html.ActionLink("Details", "Details", new { id=item.EnrollmentID }, new { @class = "btn btn-default" })
         </td>
     </tr>
 }
