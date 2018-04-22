@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using DataBase;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DataBase.Models;
 using MVC.Infrastructure;
-using Repositories;
-using Repositories.Interfaces;
+using MVC.Models;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
 
 namespace MVC.Controllers
 {
@@ -19,7 +14,7 @@ namespace MVC.Controllers
         // GET: Courses
         public ActionResult Index()
         {
-            return View(this._data.Courses.All().ToList());
+            return View(this._data.Courses.All().ProjectTo<CourseViewModel>().ToList());
         }
 
         // GET: Courses/Details/5
@@ -29,7 +24,7 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Course course = this._data.Courses.GetById(id);
+            var course = Mapper.Map<CourseViewModel>(this._data.Courses.GetById(id));
             if (course == null)
             {
                 return HttpNotFound();
@@ -50,8 +45,9 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CourseID,Title,Credits")] Course course)
+        public ActionResult Create([Bind(Include = "CourseID,Title,Credits")] CourseViewModel model)
         {
+            var course = Mapper.Map<Course>(model);
             if (ModelState.IsValid)
             {
                 this._data.Courses.Add(course);
@@ -59,7 +55,7 @@ namespace MVC.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(course);
+            return View(model);
         }
 
         // GET: Courses/Edit/5
@@ -70,12 +66,12 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Course course = this._data.Courses.GetById(id);
-            if (course == null)
+            var model = Mapper.Map<CourseViewModel>(this._data.Courses.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(course);
+            return View(model);
         }
 
         // POST: Courses/Edit/5
@@ -84,15 +80,16 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CourseID,Title,Credits")] Course course)
+        public ActionResult Edit([Bind(Include = "CourseID,Title,Credits")] CourseViewModel model)
         {
+            var course = Mapper.Map<Course>(model);
             if (ModelState.IsValid)
             {
                 this._data.Courses.Update(course);
                 this._data.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(course);
+            return View(model);
         }
 
         // GET: Courses/Delete/5
@@ -103,12 +100,12 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Course course = this._data.Courses.GetById(id);
-            if (course == null)
+            var model = Mapper.Map<CourseViewModel>(this._data.Courses.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(course);
+            return View(model);
         }
 
         // POST: Courses/Delete/5
@@ -117,8 +114,8 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Course course = this._data.Courses.GetById(id);
-            this._data.Courses.Delete(course);
+            var model = Mapper.Map<CourseViewModel>(this._data.Courses.GetById(id));
+            this._data.Courses.Delete(model);
             this._data.SaveChanges();
             return RedirectToAction("Index");
         }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DataBase.Models.Student>
+﻿@model PagedList.PagedList<StudentViewModel>
 
 @{
     ViewBag.Title = "Students";
@@ -10,16 +10,25 @@
         @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
     </p>
 }
+
+@using(Html.BeginForm("Index", "Students", FormMethod.Get))
+{
+    <div class="form-group">
+        @Html.TextBox("query", "", new { @class = "form-control col-md-4" })
+        <input type="submit" class="btn btn-default" value="Search"/>
+    </div>
+}
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.ActionLink("First name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByFirstName })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.FirstMidName)
+            @Html.ActionLink("Last name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByLastName })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.EnrollmentDate)
+            @Html.Display("Date")
         </th>
         <th></th>
     </tr>
@@ -43,3 +52,8 @@
     }
 
 </table>
+
+<div class="text-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", "Students", 
+        new { page, query = (string)ViewData["query"], order = (int)ViewData["order"] }))
+</div>

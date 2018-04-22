@@ -6,9 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DataBase;
 using DataBase.Models;
 using MVC.Infrastructure;
+using MVC.Models;
 using Repositories;
 
 namespace MVC.Controllers
@@ -18,7 +21,10 @@ namespace MVC.Controllers
         // GET: Enrollments
         public ActionResult Index()
         {
-            var enrollments = this._data.Enrollments.All().Include(e => e.Course).Include(e => e.Student);
+            var enrollments = this._data.Enrollments.All()
+                .Include(e => e.Course)
+                .Include(e => e.Student)
+                .ProjectTo<EnrollmentViewModel>();
             return View(enrollments.ToList());
         }
 
@@ -29,20 +35,20 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Enrollment enrollment = this._data.Enrollments.GetById(id);
-            if (enrollment == null)
+            var model = Mapper.Map<EnrollmentViewModel>(this._data.Enrollments.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(enrollment);
+            return View(model);
         }
 
         // GET: Enrollments/Create
         [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Create()
         {
-            ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title");
-            ViewBag.StudentID = new SelectList(this._data.Students.All(), "StudentID", "LastName");
+            ViewBag.CourseID = new SelectList(this._data.Courses.All().ProjectTo<CourseViewModel>(), "CourseID", "Title");
+            ViewBag.StudentID = new SelectList(this._data.Students.All().ProjectTo<StudentViewModel>(), "StudentID", "LastName");
             return View();
         }
 
@@ -52,8 +58,9 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EnrollmentID,CourseID,StudentID,Grade")] Enrollment enrollment)
+        public ActionResult Create([Bind(Include = "EnrollmentID,CourseID,StudentID,Grade")] EnrollmentViewModel model)
         {
+            var enrollment = Mapper.Map<Enrollment>(model);
             if (ModelState.IsValid)
             {
                 this._data.Enrollments.Add(enrollment);
@@ -61,9 +68,9 @@ namespace MVC.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title", enrollment.CourseID);
-            ViewBag.StudentID = new SelectList(this._data.Students.All(), "StudentID", "LastName", enrollment.StudentID);
-            return View(enrollment);
+            ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title", model.CourseID);
+            ViewBag.StudentID = new SelectList(this._data.Students.All(), "StudentID", "LastName", model.StudentID);
+            return View(model);
         }
 
         // GET: Enrollments/Edit/5
@@ -74,14 +81,14 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Enrollment enrollment = this._data.Enrollments.GetById(id);
-            if (enrollment == null)
+            var model = Mapper.Map<EnrollmentViewModel>(this._data.Enrollments.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title", enrollment.CourseID);
-            ViewBag.StudentID = new SelectList(this._data.Students.All(), "StudentID", "LastName", enrollment.StudentID);
-            return View(enrollment);
+            ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title", model.CourseID);
+            ViewBag.StudentID = new SelectList(this._data.Students.All(), "StudentID", "LastName", model.StudentID);
+            return View(model);
         }
 
         // POST: Enrollments/Edit/5
@@ -90,8 +97,9 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "EnrollmentID,CourseID,StudentID,Grade")] Enrollment enrollment)
+        public ActionResult Edit([Bind(Include = "EnrollmentID,CourseID,StudentID,Grade")] EnrollmentViewModel model)
         {
+            var enrollment = Mapper.Map<Enrollment>(model);
             if (ModelState.IsValid)
             {
                 this._data.Enrollments.Update(enrollment);
@@ -99,7 +107,7 @@ namespace MVC.Controllers
             }
             ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title", enrollment.CourseID);
             ViewBag.StudentID = new SelectList(this._data.Students.All(), "StudentID", "LastName", enrollment.StudentID);
-            return View(enrollment);
+            return View(model);
         }
 
         // GET: Enrollments/Delete/5
@@ -110,12 +118,12 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Enrollment enrollment = this._data.Enrollments.GetById(id);
-            if (enrollment == null)
+            var model = Mapper.Map<EnrollmentViewModel>(this._data.Enrollments.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(enrollment);
+            return View(model);
         }
 
         // POST: Enrollments/Delete/5
@@ -124,8 +132,8 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Enrollment enrollment = this._data.Enrollments.GetById(id);
-            this._data.Enrollments.Delete(enrollment);
+            var model = Mapper.Map<EnrollmentViewModel>(this._data.Enrollments.GetById(id));
+            this._data.Enrollments.Delete(model);
             this._data.SaveChanges();
             return RedirectToAction("Index");
         }

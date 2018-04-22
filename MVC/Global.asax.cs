@@ -1,8 +1,5 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using MVC.App_Start;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -14,6 +11,7 @@ namespace MVC
         protected void Application_Start()
         {
             TelemetryConfiguration.Active.DisableTelemetry = true;
+            AutoMapperConfig.RegisterMapping();
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

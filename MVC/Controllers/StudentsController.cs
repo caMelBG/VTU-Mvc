@@ -1,20 +1,39 @@
-﻿using System.Linq;
-using System.Net;
-using System.Web.Mvc;
-
-using DataBase;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DataBase.Models;
 using MVC.Infrastructure;
-using Repositories;
+using MVC.Models;
+using PagedList;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
 
 namespace MVC.Controllers
 {
     public class StudentsController : BaseController
     {
         // GET: Students
-        public ActionResult Index()
+        public ActionResult Index(int page = 1, string query = "", OrderType order = OrderType.Default)
         {
-            return View(this._data.Students.All().ToList());
+            ViewData["query"] = query;
+            ViewData["order"] = (int)order;
+            var model = this._data.Students.All()
+                .Where(x => x.FirstMidName.Contains(query))
+                .Where(x => x.LastName.Contains(query));
+            if (order == OrderType.ByFirstName)
+            {
+                model = model.OrderBy(x => x.FirstMidName);
+            }
+            else if (order == OrderType.ByLastName)
+            {
+                model = model.OrderBy(x => x.LastName);
+            }
+            else
+            {
+                model = model.OrderBy(x => x.EnrollmentDate);
+            }
+
+            return View(model.ProjectTo<StudentViewModel>().ToPagedList(page, 5));
         }
 
         // GET: Students/Details/5
@@ -24,12 +43,12 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = this._data.Students.GetById(id);
-            if (student == null)
+            var model = Mapper.Map<StudentViewModel>(this._data.Students.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            return View(model);
         }
 
         // GET: Students/Create
@@ -45,8 +64,9 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        public ActionResult Create([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] StudentViewModel model)
         {
+            var student = Mapper.Map<Student>(model);
             if (ModelState.IsValid)
             {
                 this._data.Students.Add(student);
@@ -54,7 +74,7 @@ namespace MVC.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(student);
+            return View(model);
         }
 
         // GET: Students/Edit/5
@@ -65,12 +85,12 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = this._data.Students.GetById(id);
-            if (student == null)
+            var model = Mapper.Map<StudentViewModel>(this._data.Students.GetById(id));
+            if (model == null)
             {
                 return HttpNotFound();
             }
-            return View(student);
+            return View(model);
         }
 
         // POST: Students/Edit/5
@@ -79,14 +99,15 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] Student student)
+        public ActionResult Edit([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] StudentViewModel model)
         {
+            var student = Mapper.Map<Student>(model);
             if (ModelState.IsValid)
             {
                 this._data.Students.Update(student);
                 return RedirectToAction("Index");
             }
-            return View(student);
+            return View(model);
         }
 
         // GET: Students/Delete/5
@@ -97,7 +118,7 @@ namespace MVC.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = this._data.Students.GetById(id);
+            var student = Mapper.Map<StudentViewModel>(this._data.Students.GetById(id));
             if (student == null)
             {
                 return HttpNotFound();
@@ -111,8 +132,8 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Student student = this._data.Students.GetById(id);
-            this._data.Students.Delete(student);
+            var model = Mapper.Map<StudentViewModel>(this._data.Students.GetById(id));
+            this._data.Students.Delete(model);
             this._data.SaveChanges();
             return RedirectToAction("Index");
         }
