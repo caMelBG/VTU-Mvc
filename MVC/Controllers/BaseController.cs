@@ -1,4 +1,6 @@
-﻿using Repositories.Interfaces;
+﻿using DataBase;
+using Repositories;
+using Repositories.Interfaces;
 using System.Web.Mvc;
 
 namespace MVC.Controllers
@@ -7,9 +9,9 @@ namespace MVC.Controllers
     {
         protected IUnitOfWork _data;
 
-        public BaseController(IUnitOfWork data)
+        public BaseController()
         {
-            this._data = data;
+            this._data = new UnitOfWork(new UniversityContext());
         }
     }
 }

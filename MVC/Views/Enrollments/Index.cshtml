@@ -4,9 +4,13 @@
     ViewBag.Title = "Entrollments";
 }
 
-<p>
-    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
-</p>
+@if (User.IsInRole(Constants.AdminRole))
+{
+    <p>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
+    </p>
+}
+
 <table class="table">
     <tr>
         <th>
@@ -21,21 +25,22 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Course.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Student.LastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Grade)
-        </td>
-        <td>
-            @Html.ActionLink("Details", "Details", new { id=item.EnrollmentID }, new { @class = "btn btn-default" })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Student.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.EnrollmentID }, new { @class = "btn btn-default" })
+            </td>
+        </tr>
+    }
 
 </table>

@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using DataBase;
 using DataBase.Models;
+using MVC.Infrastructure;
 using Repositories;
 using Repositories.Interfaces;
 
@@ -15,14 +16,6 @@ namespace MVC.Controllers
 {
     public class CoursesController : BaseController
     {
-        public CoursesController() : base(new UnitOfWork(new UniversityContext()))
-        {
-        }
-
-        public CoursesController(IUnitOfWork data) : base(data)
-        {
-        }
-
         // GET: Courses
         public ActionResult Index()
         {
@@ -45,6 +38,7 @@ namespace MVC.Controllers
         }
 
         // GET: Courses/Create
+        [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Create()
         {
             return View();
@@ -53,6 +47,7 @@ namespace MVC.Controllers
         // POST: Courses/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CourseID,Title,Credits")] Course course)
@@ -68,6 +63,7 @@ namespace MVC.Controllers
         }
 
         // GET: Courses/Edit/5
+        [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -85,6 +81,7 @@ namespace MVC.Controllers
         // POST: Courses/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "CourseID,Title,Credits")] Course course)
@@ -99,6 +96,7 @@ namespace MVC.Controllers
         }
 
         // GET: Courses/Delete/5
+        [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -114,6 +112,7 @@ namespace MVC.Controllers
         }
 
         // POST: Courses/Delete/5
+        [Authorize(Roles = Constants.AdminRole)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

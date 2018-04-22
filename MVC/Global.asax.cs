@@ -1,4 +1,4 @@
-﻿using MVC.App_Start;
+﻿using Microsoft.ApplicationInsights.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +13,8 @@ namespace MVC
     {
         protected void Application_Start()
         {
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

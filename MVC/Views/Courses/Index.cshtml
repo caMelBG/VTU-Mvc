@@ -3,10 +3,12 @@
 @{
     ViewBag.Title = "Courses";
 }
-
+@if (User.IsInRole(Constants.AdminRole))
+{
 <p>
     @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
 </p>
+}
 <table class="table">
     <tr>
         <th>

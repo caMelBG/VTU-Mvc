@@ -35,7 +35,11 @@
 
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.EnrollmentID }, new { @class = "btn btn-default" })
-    @Html.ActionLink("Delete", "Delete", new { id = Model.EnrollmentID }, new { @class = "btn btn-default" })
-</p>
+
+@if (User.IsInRole(Constants.AdminRole))
+{
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.EnrollmentID }, new { @class = "btn btn-default" })
+        @Html.ActionLink("Delete", "Delete", new { id = Model.EnrollmentID }, new { @class = "btn btn-default" })
+    </p>
+}

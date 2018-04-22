@@ -4,16 +4,13 @@ using System.Web.Mvc;
 
 using DataBase;
 using DataBase.Models;
+using MVC.Infrastructure;
 using Repositories;
 
 namespace MVC.Controllers
 {
     public class StudentsController : BaseController
     {
-        public StudentsController() : base(new UnitOfWork(new UniversityContext()))
-        {
-        }
-
         // GET: Students
         public ActionResult Index()
         {
@@ -36,6 +33,7 @@ namespace MVC.Controllers
         }
 
         // GET: Students/Create
+        [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Create()
         {
             return View();
@@ -44,6 +42,7 @@ namespace MVC.Controllers
         // POST: Students/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] Student student)
@@ -59,6 +58,7 @@ namespace MVC.Controllers
         }
 
         // GET: Students/Edit/5
+        [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -76,6 +76,7 @@ namespace MVC.Controllers
         // POST: Students/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] Student student)
@@ -89,6 +90,7 @@ namespace MVC.Controllers
         }
 
         // GET: Students/Delete/5
+        [Authorize(Roles = Constants.AdminRole)]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -104,6 +106,7 @@ namespace MVC.Controllers
         }
 
         // POST: Students/Delete/5
+        [Authorize(Roles = Constants.AdminRole)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
