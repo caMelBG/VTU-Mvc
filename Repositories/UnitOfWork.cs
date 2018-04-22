@@ -6,13 +6,13 @@ using System.Data.Entity;
 
 namespace Repositories
 {
-    public class TwitterData : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly DbContext context;
 
         private readonly Dictionary<Type, object> repositories = new Dictionary<Type, object>();
 
-        public TwitterData(DbContext context)
+        public UnitOfWork(DbContext context)
         {
             this.context = context;
         }
