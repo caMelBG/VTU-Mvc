@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 
 namespace DataBase
 {
@@ -22,7 +23,7 @@ namespace DataBase
             new Student{FirstMidName="Nino",LastName="Olivetto",EnrollmentDate=DateTime.Parse("2005-09-01")}
             };
 
-            students.ForEach(s => context.Students.Add(s));
+            students.ForEach(s => context.Students.AddOrUpdate(s));
             context.SaveChanges();
             var courses = new List<Course>
             {
@@ -34,7 +35,7 @@ namespace DataBase
             new Course{CourseID=2021,Title="Composition",Credits=3,},
             new Course{CourseID=2042,Title="Literature",Credits=4,}
             };
-            courses.ForEach(s => context.Courses.Add(s));
+            courses.ForEach(s => context.Courses.AddOrUpdate(s));
             context.SaveChanges();
             var enrollments = new List<Enrollment>
             {
@@ -51,7 +52,7 @@ namespace DataBase
             new Enrollment{StudentID=6,CourseID=1045},
             new Enrollment{StudentID=7,CourseID=3141,Grade=Grade.A},
             };
-            enrollments.ForEach(s => context.Enrollments.Add(s));
+            enrollments.ForEach(s => context.Enrollments.AddOrUpdate(s));
             context.SaveChanges();
         }
     }

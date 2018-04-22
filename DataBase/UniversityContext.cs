@@ -5,7 +5,7 @@ namespace DataBase
 {
     public class UniversityContext : DbContext
     {
-        public UniversityContext() : base("UniversityContext")
+        public UniversityContext() : base("DefaultConnection")
         {
             Database.SetInitializer<UniversityContext>(new UniversityInitializer<UniversityContext>());
         }
