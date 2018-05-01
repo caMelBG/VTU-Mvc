@@ -1,11 +1,12 @@
 ﻿using DataBase.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 
 namespace DataBase
 {
-    public class UniversityContext : DbContext
+    public class UniversityContext : IdentityDbContext<User>
     {
-        public UniversityContext() : base("DefaultConnection")
+        public UniversityContext() : base("DefaultConnection", throwIfV1Schema: false)
         {
             Database.SetInitializer<UniversityContext>(new UniversityInitializer<UniversityContext>());
         }
@@ -15,6 +16,11 @@ namespace DataBase
         public DbSet<Enrollment> Enrollments { get; set; }
 
         public DbSet<Course> Courses { get; set; }
+
+        public static UniversityContext Create()
+        {
+            return new UniversityContext();
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

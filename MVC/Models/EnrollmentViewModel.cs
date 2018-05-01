@@ -1,4 +1,5 @@
-﻿using DataBase.Models;
+﻿using AutoMapper;
+using DataBase.Models;
 using MVC.Infrastructure.Mapping;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,8 +21,8 @@ namespace MVC.Models
         [Display(Name = "Grade")]
         public Grade? Grade { get; set; }
 
-        public virtual CourseViewModel Course { get; set; }
+        public CourseViewModel Course { get; set; }
 
-        public virtual StudentViewModel Student { get; set; }
+        public StudentViewModel Student { get; set; }
     }
 }

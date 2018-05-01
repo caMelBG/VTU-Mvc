@@ -3,13 +3,14 @@
 @{
     ViewBag.Title = "Courses";
 }
+
 @if (User.IsInRole(Constants.AdminRole))
 {
-<p>
-    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
-</p>
+    <p>
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-default" })
+    </p>
 }
-<table class="table">
+<table class="table table-hover">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Title)
@@ -17,21 +18,18 @@
         <th>
             @Html.DisplayNameFor(model => model.Credits)
         </th>
-        <th></th>
     </tr>
 
 @foreach (var item in Model) {
-    <tr>
+    <tr onclick="goToDetails(@item.CourseID)">
         <td>
             @Html.DisplayFor(modelItem => item.Title)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Credits)
         </td>
-        <td>
-            @Html.ActionLink("Details", "Details", new { id=item.CourseID }, new { @class = "btn btn-default" })
-        </td>
     </tr>
 }
 
 </table>
+

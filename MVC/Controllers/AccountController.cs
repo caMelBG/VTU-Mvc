@@ -5,10 +5,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using DataBase.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MVC.Models;
+using Repositories;
 
 namespace MVC.Controllers
 {
@@ -17,15 +19,20 @@ namespace MVC.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private Repository<User> _userRepository;
 
         public AccountController()
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(
+            ApplicationUserManager userManager, 
+            ApplicationSignInManager signInManager, 
+            Repository<User> userRepository)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            this._userRepository = userRepository;
         }
 
         public ApplicationSignInManager SignInManager
@@ -52,13 +59,21 @@ namespace MVC.Controllers
             }
         }
 
+        [AllowAnonymous]
+        public ActionResult ManageRoles()
+        {
+            var model = this._userRepository.All();
+            return View(model);
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            var model = new LoginViewModel() { Email = "admin@admin.com", Password = "admin" };
+            return View(model);
         }
 
         //
@@ -151,7 +166,7 @@ namespace MVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -367,7 +382,7 @@ namespace MVC.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

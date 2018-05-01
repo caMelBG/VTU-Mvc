@@ -1,15 +1,18 @@
-using System.Data.Entity.Migrations;
-
 namespace DataBase.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<UniversityContext>
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
+    internal sealed class Configuration : DbMigrationsConfiguration<DataBase.UniversityContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(UniversityContext context)
+        protected override void Seed(DataBase.UniversityContext context)
         {
             //  This method will be called after migrating to the latest version.
 

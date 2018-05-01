@@ -21,11 +21,8 @@ namespace MVC.Controllers
         // GET: Enrollments
         public ActionResult Index()
         {
-            var enrollments = this._data.Enrollments.All()
-                .Include(e => e.Course)
-                .Include(e => e.Student)
-                .ProjectTo<EnrollmentViewModel>();
-            return View(enrollments.ToList());
+            var enrollments = this._data.Enrollments.All().ToList();
+            return View(Mapper.Map<IEnumerable<EnrollmentViewModel>>(enrollments));
         }
 
         // GET: Enrollments/Details/5

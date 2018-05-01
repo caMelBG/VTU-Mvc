@@ -11,7 +11,7 @@
     </p>
 }
 
-<table class="table">
+<table class="table table-hover">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Course.Title)
@@ -22,12 +22,11 @@
         <th>
             @Html.DisplayNameFor(model => model.Grade)
         </th>
-        <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
-        <tr>
+        <tr onclick="goToDetails(@item.EnrollmentID)">
             <td>
                 @Html.DisplayFor(modelItem => item.Course.Title)
             </td>
@@ -36,9 +35,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Grade)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = item.EnrollmentID }, new { @class = "btn btn-default" })
             </td>
         </tr>
     }
