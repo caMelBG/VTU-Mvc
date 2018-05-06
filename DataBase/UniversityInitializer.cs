@@ -8,11 +8,20 @@ using System.Data.Entity.Migrations;
 
 namespace DataBase
 {
-    public class UniversityInitializer<TContext> : DropCreateDatabaseAlways<TContext>, IDatabaseInitializer<TContext>
+    public class UniversityInitializer<TContext> : DropCreateDatabaseIfModelChanges<TContext>, IDatabaseInitializer<TContext>
         where TContext : UniversityContext
     {
         protected override void Seed(TContext context)
         {
+            var user = new User()
+            {
+                Email = "admin@admin.com",
+                UserName = "admin@admin.com"
+            };
+            var userStore = new UserStore<User>(context);
+            var userManager = new UserManager<User>(userStore);
+            userManager.Create(user, "admina");
+
             var students = new List<Student>
             {
             new Student{StudentID=1,FirstMidName="Carson",LastName="Alexander",EnrollmentDate=DateTime.Parse("2005-09-01")},

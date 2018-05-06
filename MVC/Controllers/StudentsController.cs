@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using DataBase.Models;
 using MVC.Infrastructure;
+using MVC.Infrastructure.Extensions;
 using MVC.Models;
 using PagedList;
 using System.Linq;
@@ -17,23 +18,15 @@ namespace MVC.Controllers
         {
             ViewData["query"] = query;
             ViewData["order"] = (int)order;
-            var model = this._data.Students.All()
-                .Where(x => x.FirstMidName.Contains(query))
-                .Where(x => x.LastName.Contains(query));
-            if (order == OrderType.ByFirstName)
-            {
-                model = model.OrderBy(x => x.FirstMidName);
-            }
-            else if (order == OrderType.ByLastName)
-            {
-                model = model.OrderBy(x => x.LastName);
-            }
-            else
-            {
-                model = model.OrderBy(x => x.EnrollmentDate);
-            }
 
-            return View(model.ProjectTo<StudentViewModel>().ToPagedList(page, 5));
+            var model = this._data.Students.All()
+                .Where(x =>
+                    x.FirstMidName.ToLower().Contains(query) ||
+                    x.LastName.ToLower().Contains(query))
+                .TypedOrder(order)
+                .ProjectTo<StudentViewModel>()
+                .ToPagedList(page, 5);
+            return View(model);
         }
 
         // GET: Students/Details/5

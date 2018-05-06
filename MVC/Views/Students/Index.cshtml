@@ -11,21 +11,35 @@
     </p>
 }
 
-@using(Html.BeginForm("Index", "Students", FormMethod.Get))
+@using (Html.BeginForm("Index", "Students", FormMethod.Get))
 {
     <div class="form-group">
         @Html.TextBox("query", "", new { @class = "form-control col-md-4" })
-        <input type="submit" class="btn btn-default" value="Search"/>
+        <input type="submit" class="btn btn-default" value="Search" />
     </div>
 }
 
 <table class="table table-hover">
     <tr>
         <th>
-            @Html.ActionLink("First name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByFirstName })
+            @if ((OrderType)ViewData["order"] == OrderType.ByFirstNameAsc)
+            {
+                @Html.ActionLink("First name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByFirstNameDesc }, new { @class = "" })
+            }
+            else
+            {
+                @Html.ActionLink("First name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByFirstNameAsc }, new { @class = "" })
+            }
         </th>
         <th>
-            @Html.ActionLink("Last name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByLastName })
+            @if ((OrderType)ViewData["order"] == OrderType.ByLastNameAsc)
+            {
+                @Html.ActionLink("Last name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByLastNameDesc }, new { @class = "" })
+            }
+            else
+            {
+                @Html.ActionLink("Last name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByLastNameAsc }, new { @class = "" })
+            }
         </th>
         <th>
             @Html.Display("Date")
@@ -50,6 +64,6 @@
 </table>
 
 <div class="text-center">
-    @Html.PagedListPager(Model, page => Url.Action("Index", "Students", 
-        new { page, query = (string)ViewData["query"], order = (int)ViewData["order"] }))
+    @Html.PagedListPager(Model, page => Url.Action("Index", "Students",
+                new { page, query = (string)ViewData["query"], order = (int)ViewData["order"] }))
 </div>

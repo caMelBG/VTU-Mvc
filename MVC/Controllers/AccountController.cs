@@ -5,8 +5,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using DataBase;
 using DataBase.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MVC.Models;
@@ -32,7 +35,6 @@ namespace MVC.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            this._userRepository = userRepository;
         }
 
         public ApplicationSignInManager SignInManager
@@ -62,8 +64,31 @@ namespace MVC.Controllers
         [AllowAnonymous]
         public ActionResult ManageRoles()
         {
-            var model = this._userRepository.All();
-            return View(model);
+            this._userRepository = new Repository<User>(new UniversityContext());
+            var model = this._userRepository.All().ToList();
+            return View(model.Select(x => 
+                new UserViewModel()
+                {
+                    Id = x.Id,
+                    UserName = x.UserName,
+                    IsAdmin = this.UserManager.IsInRole(x.Id, Infrastructure.Constants.AdminRole)
+                }));
+        }        
+
+        public ActionResult AssignAsAdmin(string id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UniversityContext()));
+                if (!roleManager.RoleExists(Infrastructure.Constants.AdminRole))
+                {
+                    roleManager.Create(new IdentityRole(Infrastructure.Constants.AdminRole));
+                }
+
+                UserManager.AddToRole<User, string>(id, Infrastructure.Constants.AdminRole);
+            }
+
+            return RedirectToAction(nameof(ManageRoles));
         }
 
         //

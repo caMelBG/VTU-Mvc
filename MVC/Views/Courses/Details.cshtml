@@ -27,7 +27,7 @@
 
     </dl>
 </div>
-@if (User.IsInRole(Constants.AdminRole))
+@if (User.IsInRole(MVC.Infrastructure.Constants.AdminRole))
 {
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.CourseID }, new { @class = "btn btn-default" })
