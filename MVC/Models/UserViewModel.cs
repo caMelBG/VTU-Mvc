@@ -1,5 +1,6 @@
 ﻿using DataBase.Models;
 using MVC.Infrastructure.Mapping;
+using System.Collections.Generic;
 
 namespace MVC.Models
 {
@@ -9,6 +10,6 @@ namespace MVC.Models
         
         public string UserName { get; set; }
 
-        public bool IsAdmin { get; set; }
+        public string RoleId { get; set; }
     }
 }

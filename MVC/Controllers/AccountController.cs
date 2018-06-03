@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -23,18 +24,21 @@ namespace MVC.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private Repository<User> _userRepository;
+        private RoleManager<IdentityRole> roleManager;
 
         public AccountController()
         {
+            this.roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UniversityContext()));
         }
 
         public AccountController(
-            ApplicationUserManager userManager, 
-            ApplicationSignInManager signInManager, 
+            ApplicationUserManager userManager,
+            ApplicationSignInManager signInManager,
             Repository<User> userRepository)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            this.roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UniversityContext()));
         }
 
         public ApplicationSignInManager SignInManager
@@ -43,9 +47,9 @@ namespace MVC.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -66,29 +70,43 @@ namespace MVC.Controllers
         {
             this._userRepository = new Repository<User>(new UniversityContext());
             var model = this._userRepository.All().ToList();
-            return View(model.Select(x => 
-                new UserViewModel()
-                {
-                    Id = x.Id,
-                    UserName = x.UserName,
-                    IsAdmin = this.UserManager.IsInRole(x.Id, Infrastructure.Constants.AdminRole)
-                }));
-        }        
-
-        public ActionResult AssignAsAdmin(string id)
-        {
-            if (!string.IsNullOrEmpty(id))
+            var viewModel = new ManageRolesViewModel()
             {
-                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UniversityContext()));
-                if (!roleManager.RoleExists(Infrastructure.Constants.AdminRole))
+                Users = model.Select(x =>
+                    new UserViewModel()
+                    {
+                        Id = x.Id,
+                        UserName = x.UserName,
+                        RoleId = x.Roles.FirstOrDefault().RoleId,
+                    }).ToList(),
+                Roles = this.roleManager.Roles.Select(x => new SelectListItem() { Value = x.Id, Text = x.Name, }).ToList()
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult AssignToRole(string userId, string roleName)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                if (!this.roleManager.RoleExists(roleName))
                 {
-                    roleManager.Create(new IdentityRole(Infrastructure.Constants.AdminRole));
+                    this.roleManager.Create(new IdentityRole(roleName));
                 }
 
-                UserManager.AddToRole<User, string>(id, Infrastructure.Constants.AdminRole);
+                var userRoles = this.UserManager.GetRoles(userId).ToArray();
+                UserManager.RemoveFromRoles(userId, userRoles);
+                UserManager.AddToRole<User, string>(userId, roleName);
             }
 
             return RedirectToAction(nameof(ManageRoles));
+        }
+
+        [HttpGet]
+        public List<string> GetRoles()
+        {
+            var roles = this.roleManager.Roles.Select(x => x.Name).ToList();
+            return roles;
         }
 
         //

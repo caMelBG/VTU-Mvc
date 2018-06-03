@@ -24,20 +24,24 @@
         <th>
             @if ((OrderType)ViewData["order"] == OrderType.ByFirstNameAsc)
             {
+                <span class="glyphicon glyphicon-arrow-up"></span>
                 @Html.ActionLink("First name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByFirstNameDesc }, new { @class = "" })
             }
             else
             {
+                <span class="glyphicon glyphicon-arrow-down"></span>
                 @Html.ActionLink("First name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByFirstNameAsc }, new { @class = "" })
             }
         </th>
         <th>
             @if ((OrderType)ViewData["order"] == OrderType.ByLastNameAsc)
             {
+                <span class="glyphicon glyphicon-arrow-up"></span>
                 @Html.ActionLink("Last name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByLastNameDesc }, new { @class = "" })
             }
             else
             {
+                <span class="glyphicon glyphicon-arrow-down"></span>
                 @Html.ActionLink("Last name", "Index", new { page = Model.PageNumber, query = (string)ViewData["query"], order = (int)OrderType.ByLastNameAsc }, new { @class = "" })
             }
         </th>
@@ -48,17 +52,17 @@
 
     @foreach (var item in Model)
     {
-        <tr onclick="goToDetails(@item.StudentID)">
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstMidName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EnrollmentDate)
-            </td>
-        </tr>
+    <tr onclick="goToDetails(@item.StudentID)">
+        <td>
+            @Html.DisplayFor(modelItem => item.FirstMidName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EnrollmentDate)
+        </td>
+    </tr>
     }
 
 </table>

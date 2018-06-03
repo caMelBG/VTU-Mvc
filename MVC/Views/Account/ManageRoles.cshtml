@@ -1,4 +1,4 @@
-﻿@model IEnumerable<UserViewModel>
+﻿@model ManageRolesViewModel
 
 @{
     ViewBag.Title = "Manage Roles";
@@ -7,25 +7,43 @@
 <table class="table table-hover">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.UserName)
+            @Html.DisplayName("User Email")
         </th>
-        <th></th>
+        <th>
+            @Html.DisplayName("Role")
+        </th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Users)
     {
         <tr style="cursor: auto;">
+            @Html.Hidden("userId", item.Id, new { @class = "userId" })
             <td>
                 @Html.DisplayFor(modelItem => item.UserName)
             </td>
             <td>
-                @if (!item.IsAdmin)
-                {
-                    @Html.ActionLink("Make admin", "AssignAsAdmin", new { id = item.Id }, new { @class = "btn btn-sm-default" })
-                }
+               
+                @Html.DropDownList("samo-tesni-picheta", Model.Roles.Select(x =>
+                 {
+                     return new SelectListItem()
+                     {
+                         Text = x.Text,
+                         Value = x.Value,
+                         Selected = x.Value == item.RoleId
+                     };
+                 }).ToList(), new { @class = "role-checkox from-control" })
             </td>
         </tr>
     }
 
 </table>
+@section scripts{
+    <script>
+        $(".role-checkox").change((event) => {
+            var roleName = $(event.target).find("option:selected").text();
+            var userId = $(event.target).parent().parent().find(".userId").val();
 
+            $.post("@Url.Action("AssignToRole")", { userId: userId, roleName: roleName });
+        });
+    </script>    
+}
