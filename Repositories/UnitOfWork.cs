@@ -8,20 +8,20 @@ namespace Repositories
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        private readonly DbContext context;
+        private readonly DbContext _context;
 
         private readonly Dictionary<Type, object> repositories = new Dictionary<Type, object>();
 
         public UnitOfWork(DbContext context)
         {
-            this.context = context;
+            this._context = context;
         }
 
         public DbContext Context
         {
             get
             {
-                return this.context;
+                return this._context;
             }
         }
 
@@ -51,7 +51,7 @@ namespace Repositories
 
         public int SaveChanges()
         {
-            return this.context.SaveChanges();
+            return this._context.SaveChanges();
         }
 
         public void Dispose()
@@ -63,9 +63,9 @@ namespace Repositories
         {
             if (disposing)
             {
-                if (this.context != null)
+                if (this._context != null)
                 {
-                    this.context.Dispose();
+                    this._context.Dispose();
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Repositories
             {
                 var type = typeof(Repository<T>);
 
-                this.repositories.Add(typeof(T), Activator.CreateInstance(type, this.context));
+                this.repositories.Add(typeof(T), Activator.CreateInstance(type, this._context));
             }
 
             return (IRepository<T>)this.repositories[typeof(T)];

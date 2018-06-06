@@ -15,6 +15,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MVC.Models;
 using Repositories;
+using Repositories.Interfaces;
 
 namespace MVC.Controllers
 {
@@ -23,22 +24,27 @@ namespace MVC.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private Repository<User> _userRepository;
-        private RoleManager<IdentityRole> roleManager;
+        private RoleManager<IdentityRole> _roleManager;
+        private IRepository<User> _userRepository;
 
-        public AccountController()
+        public AccountController(
+            RoleManager<IdentityRole> roleManager, 
+            IRepository<User> userRepository)
         {
-            this.roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UniversityContext()));
+            this._roleManager = roleManager;
+            this._userRepository = userRepository;
         }
 
         public AccountController(
             ApplicationUserManager userManager,
             ApplicationSignInManager signInManager,
-            Repository<User> userRepository)
+            RoleManager<IdentityRole> roleManager,
+            IRepository<User> userRepository)
         {
             UserManager = userManager;
             SignInManager = signInManager;
-            this.roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new UniversityContext()));
+            this._roleManager = roleManager;
+            this._userRepository = userRepository;
         }
 
         public ApplicationSignInManager SignInManager
@@ -68,7 +74,6 @@ namespace MVC.Controllers
         [AllowAnonymous]
         public ActionResult ManageRoles()
         {
-            this._userRepository = new Repository<User>(new UniversityContext());
             var model = this._userRepository.All().ToList();
             var viewModel = new ManageRolesViewModel()
             {
@@ -77,9 +82,9 @@ namespace MVC.Controllers
                     {
                         Id = x.Id,
                         UserName = x.UserName,
-                        RoleId = x.Roles.FirstOrDefault().RoleId,
+                        RoleId = x.Roles.FirstOrDefault()?.RoleId,
                     }).ToList(),
-                Roles = this.roleManager.Roles.Select(x => new SelectListItem() { Value = x.Id, Text = x.Name, }).ToList()
+                Roles = this._roleManager.Roles.Select(x => new SelectListItem() { Value = x.Id, Text = x.Name, }).ToList()
             };
             return View(viewModel);
         }
@@ -89,9 +94,9 @@ namespace MVC.Controllers
         {
             if (!string.IsNullOrEmpty(userId))
             {
-                if (!this.roleManager.RoleExists(roleName))
+                if (!this._roleManager.RoleExists(roleName))
                 {
-                    this.roleManager.Create(new IdentityRole(roleName));
+                    this._roleManager.Create(new IdentityRole(roleName));
                 }
 
                 var userRoles = this.UserManager.GetRoles(userId).ToArray();
@@ -105,7 +110,7 @@ namespace MVC.Controllers
         [HttpGet]
         public List<string> GetRoles()
         {
-            var roles = this.roleManager.Roles.Select(x => x.Name).ToList();
+            var roles = this._roleManager.Roles.Select(x => x.Name).ToList();
             return roles;
         }
 
@@ -213,6 +218,7 @@ namespace MVC.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    UserManager.AddToRole(user.Id, "User");
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771

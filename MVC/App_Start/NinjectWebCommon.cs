@@ -4,12 +4,18 @@
 namespace MVC.App_Start
 {
     using System;
+    using System.Data.Entity;
     using System.Web;
-
+    using DataBase;
+    using DataBase.Models;
+    using Microsoft.AspNet.Identity;
+    using Microsoft.AspNet.Identity.EntityFramework;
     using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 
     using Ninject;
     using Ninject.Web.Common;
+    using Repositories;
+    using Repositories.Interfaces;
 
     public static class NinjectWebCommon 
     {
@@ -61,6 +67,21 @@ namespace MVC.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-        }        
+            kernel.Bind<DbContext>().To<UniversityContext>()
+                .InTransientScope();
+
+            kernel.Bind<IUnitOfWork>().To<UnitOfWork>()
+                .InTransientScope();
+
+            kernel.Bind<IRepository<User>>().To<Repository<User>>()
+                .InTransientScope();
+
+            kernel.Bind<RoleStore<IdentityRole>>().To<RoleStore<IdentityRole>>()
+                .InTransientScope();
+
+            kernel.Bind<RoleManager<IdentityRole>>().To<RoleManager<IdentityRole>>()
+                .InTransientScope()
+                .WithConstructorArgument("store", kernel.Get<RoleStore<IdentityRole>>());
+        }
     }
 }

@@ -3,40 +3,39 @@
 @{
     ViewBag.Title = "Manage Roles";
 }
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <table class="table table-hover">
+            <tr>
+                <th>
+                    @Html.DisplayName("User Email")
+                </th>
+                <th>
+                    @Html.DisplayName("Role")
+                </th>
+            </tr>
 
-<table class="table table-hover">
-    <tr>
-        <th>
-            @Html.DisplayName("User Email")
-        </th>
-        <th>
-            @Html.DisplayName("Role")
-        </th>
-    </tr>
+            @foreach (var item in Model.Users)
+            {
+            <tr style="cursor: auto;">
+                @Html.Hidden("userId", item.Id, new { @class = "userId" })
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
 
-    @foreach (var item in Model.Users)
-    {
-        <tr style="cursor: auto;">
-            @Html.Hidden("userId", item.Id, new { @class = "userId" })
-            <td>
-                @Html.DisplayFor(modelItem => item.UserName)
-            </td>
-            <td>
-               
-                @Html.DropDownList("samo-tesni-picheta", Model.Roles.Select(x =>
-                 {
-                     return new SelectListItem()
-                     {
-                         Text = x.Text,
-                         Value = x.Value,
-                         Selected = x.Value == item.RoleId
-                     };
-                 }).ToList(), new { @class = "role-checkox from-control" })
-            </td>
-        </tr>
-    }
+                    @Html.DropDownList("samo-tesni-picheta", Model.Roles.Select(x =>
+                           {
+                               x.Selected = x.Value == item.RoleId;
+                               return x;
+                           }).ToList(), new { @class = "role-checkox from-control" })
+                </td>
+            </tr>
+            }
 
-</table>
+        </table>
+    </div>
+</div>
 @section scripts{
     <script>
         $(".role-checkox").change((event) => {

@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using DataBase.Models;
 using MVC.Infrastructure;
 using MVC.Models;
+using Repositories.Interfaces;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -11,6 +12,10 @@ namespace MVC.Controllers
 {
     public class CoursesController : BaseController
     {
+        public CoursesController(IUnitOfWork data) : base(data)
+        {
+        }
+
         // GET: Courses
         public ActionResult Index()
         {
@@ -114,7 +119,7 @@ namespace MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var model = Mapper.Map<CourseViewModel>(this._data.Courses.GetById(id));
+            var model = this._data.Courses.GetById(id);
             this._data.Courses.Delete(model);
             this._data.SaveChanges();
             return RedirectToAction("Index");

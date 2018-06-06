@@ -6,7 +6,7 @@ namespace DataBase
 {
     public class UniversityContext : IdentityDbContext<User>
     {
-        public UniversityContext() : base("DefaultConnection", throwIfV1Schema: false)
+        public UniversityContext() : base("UniversityContext", throwIfV1Schema: false)
         {
             Database.SetInitializer<UniversityContext>(new UniversityInitializer<UniversityContext>());
         }

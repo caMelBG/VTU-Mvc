@@ -13,11 +13,16 @@ using DataBase.Models;
 using MVC.Infrastructure;
 using MVC.Models;
 using Repositories;
+using Repositories.Interfaces;
 
 namespace MVC.Controllers
 {
     public class EnrollmentsController : BaseController
     {
+        public EnrollmentsController(IUnitOfWork data) : base(data)
+        {
+        }
+
         // GET: Enrollments
         public ActionResult Index()
         {
@@ -100,6 +105,7 @@ namespace MVC.Controllers
             if (ModelState.IsValid)
             {
                 this._data.Enrollments.Update(enrollment);
+                this._data.SaveChanges();
                 return RedirectToAction("Index");
             }
             ViewBag.CourseID = new SelectList(this._data.Courses.All(), "CourseID", "Title", enrollment.CourseID);
