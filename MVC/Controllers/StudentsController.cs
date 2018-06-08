@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using DataBase.Models;
 using MVC.Infrastructure;
 using MVC.Infrastructure.Extensions;
+using MVC.Infrastructure.Validators;
 using MVC.Models;
 using PagedList;
 using Repositories.Interfaces;
@@ -14,8 +15,11 @@ namespace MVC.Controllers
 {
     public class StudentsController : BaseController
     {
-        public StudentsController(IUnitOfWork data) : base(data)
+        private IStudentValidator _validator;
+
+        public StudentsController(IUnitOfWork data, IStudentValidator validator) : base(data)
         {
+            this._validator = validator;
         }
 
         // GET: Students
@@ -62,11 +66,12 @@ namespace MVC.Controllers
         [Authorize(Roles = Constants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "StudentID,LastName,FirstMidName,EnrollmentDate")] StudentViewModel model)
+        public ActionResult Create(StudentViewModel model)
         {
             var student = Mapper.Map<Student>(model);
             if (ModelState.IsValid)
             {
+                this._validator.ValidateCreateModel(model);
                 this._data.Students.Add(student);
                 this._data.SaveChanges();
                 return RedirectToAction("Index");

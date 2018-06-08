@@ -16,6 +16,7 @@ namespace MVC.App_Start
     using Ninject.Web.Common;
     using Repositories;
     using Repositories.Interfaces;
+    using Infrastructure.Validators;
 
     public static class NinjectWebCommon 
     {
@@ -82,6 +83,8 @@ namespace MVC.App_Start
             kernel.Bind<RoleManager<IdentityRole>>().To<RoleManager<IdentityRole>>()
                 .InTransientScope()
                 .WithConstructorArgument("store", kernel.Get<RoleStore<IdentityRole>>());
+
+            kernel.Bind<IStudentValidator>().To<StudentValidator>();
         }
     }
 }

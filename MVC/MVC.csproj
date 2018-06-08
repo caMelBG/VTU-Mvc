@@ -229,6 +229,8 @@
     <Compile Include="Infrastructure\Mapping\IMapFrom.cs" />
     <Compile Include="Infrastructure\Mapping\IMapTo.cs" />
     <Compile Include="Infrastructure\OrderType.cs" />
+    <Compile Include="Infrastructure\Validators\IStudentValidator.cs" />
+    <Compile Include="Infrastructure\Validators\StudentValidator.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CourseViewModel.cs" />
     <Compile Include="Models\EnrollmentViewModel.cs" />

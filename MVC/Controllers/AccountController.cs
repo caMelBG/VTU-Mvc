@@ -120,7 +120,7 @@ namespace MVC.Controllers
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            var model = new LoginViewModel() { Email = "admin@admin.com", Password = "admin" };
+            var model = new LoginViewModel() { Email = "admin@admin.com", Password = "admina" };
             return View(model);
         }
 
